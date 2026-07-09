@@ -1,0 +1,6 @@
+{
+  "name": "Bangla News Portal",
+  "description": "A comprehensive Bangladeshi Bangla news portal featuring real-time categories, dynamic news search, local bookmarks, a custom news editor, and interactive comments and reactions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
