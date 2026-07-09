@@ -184,10 +184,6 @@ export default function NewsDetailPage({
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5" /> {news.date}
                 </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <Eye className="w-3.5 h-3.5" /> {convertToBanglaNumber(news.reads)} বার পঠিত
-                </span>
               </div>
             </div>
           </div>
@@ -267,100 +263,7 @@ export default function NewsDetailPage({
             </div>
           )}
 
-          {/* Reactions bar */}
-          <div className="border-t border-slate-200/60 mt-8 pt-6 space-y-3">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider text-center">আপনার অনুভূতি জানান</h3>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-              {[
-                { type: 'like', emoji: '👍', label: 'লাইক' },
-                { type: 'love', emoji: '❤️', label: 'লাভ' },
-                { type: 'haha', emoji: '😂', label: 'হাাহা' },
-                { type: 'wow', emoji: '😮', label: 'ওয়াও' },
-                { type: 'sad', emoji: '😢', label: 'স্যাড' },
-                { type: 'angry', emoji: '😡', label: 'অ্যাংগ্রি' }
-              ].map((reaction) => {
-                const count = news.reactions[reaction.type as keyof typeof news.reactions] || 0;
-                const isVoted = hasReacted[reaction.type];
 
-                return (
-                  <button
-                    key={reaction.type}
-                    onClick={() => handleLocalReaction(reaction.type)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition cursor-pointer select-none ${
-                      isVoted
-                        ? 'bg-red-50 dark:bg-red-950/20 border-red-200 text-brand-red'
-                        : 'bg-transparent border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    <span className="text-base">{reaction.emoji}</span>
-                    <span>{reaction.label}</span>
-                    <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.2 rounded-full text-[10px]">
-                      {convertToBanglaNumber(count)}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Interactive Comments Engine */}
-          <div className="border-t border-slate-200/60 mt-8 pt-6 space-y-4">
-            <h3 className="text-lg font-bold flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-brand-blue dark:text-blue-400" />
-              <span>মন্তব্যসমূহ ({convertToBanglaNumber(articleComments.length)})</span>
-            </h3>
-
-            {/* Form */}
-            <form onSubmit={handleCommentSubmit} className="space-y-3 bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200/60">
-              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">মতামত দিন</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  placeholder="আপনার নাম (ঐচ্ছিক)"
-                  value={commentAuthor}
-                  onChange={(e) => setCommentAuthor(e.target.value)}
-                  className="px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:border-brand-blue focus:ring-1 focus:ring-brand-blue outline-none text-slate-800 dark:text-slate-100"
-                />
-              </div>
-              <div className="flex gap-2">
-                <textarea
-                  placeholder="এখানে আপনার গঠনমূলক মন্তব্য লিখুন..."
-                  rows={2}
-                  required
-                  value={commentContent}
-                  onChange={(e) => setCommentContent(e.target.value)}
-                  className="flex-1 px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:border-brand-blue focus:ring-1 focus:ring-brand-blue outline-none resize-none text-slate-800 dark:text-slate-100"
-                />
-                <button
-                  type="submit"
-                  className="bg-brand-red hover:bg-red-700 text-white px-4 rounded-lg transition flex items-center justify-center shrink-0 cursor-pointer"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
-            </form>
-
-            {/* List */}
-            <div className="space-y-4 divide-y divide-slate-100 dark:divide-slate-900">
-              {articleComments.length === 0 ? (
-                <div className="text-center py-6 text-xs text-slate-400">
-                  কোনো মন্তব্য পাওয়া যায়নি। প্রথম ব্যক্তি হিসেবে আপনার মতামত শেয়ার করুন!
-                </div>
-              ) : (
-                articleComments.map((comment) => (
-                  <div key={comment.id} className="pt-3 first:pt-0">
-                    <div className="flex justify-between items-center mb-1 text-xs">
-                      <span className="font-bold text-slate-700 dark:text-slate-300">{comment.author}</span>
-                      <span className="text-[10px] text-slate-400">{comment.date}</span>
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed pl-2.5 border-l-2 border-brand-red">
-                      {comment.content}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
         </article>
 
         {/* Right Column: Sidebar of Related/Trending Stories (4/12) */}
@@ -399,7 +302,7 @@ export default function NewsDetailPage({
           <div className="bg-slate-950 text-white rounded-2xl p-5 border border-slate-800">
             <h4 className="text-sm font-bold text-brand-red uppercase tracking-wider mb-2">অনলাইন সম্পাদকীয়</h4>
             <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
-              আপনার মতামত আমাদের অনুপ্রাণিত করে। এই খবর সম্পর্কে আপনার কোনো ভিন্ন বা গুরুত্বপূর্ণ তথ্য থাকলে মন্তব্য বাক্সে লিখুন। আমাদের লক্ষ্য স্বাধীন ও নাগরিক সাংবাদিকতা প্রসারিত করা।
+              আপনার মতামত আমাদের অনুপ্রাণিত করে। আমাদের লক্ষ্য স্বাধীন ও নাগরিক সাংবাদিকতা প্রসারিত করা।
             </p>
           </div>
         </aside>

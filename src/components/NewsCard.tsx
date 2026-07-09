@@ -75,24 +75,7 @@ export default function NewsCard({
             </p>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-            <div className="flex items-center gap-4 text-xs text-gray-500">
-              <span className="flex items-center gap-1">
-                <Eye className="w-4 h-4" />
-                <span>{news.reads} বার পড়া হয়েছে</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <Heart className="w-4 h-4 text-red-500 fill-current" />
-                <span>{totalReactions}</span>
-              </span>
-              {news.commentsCount > 0 && (
-                <span className="flex items-center gap-1">
-                  <MessageSquare className="w-4 h-4" />
-                  <span>{news.commentsCount} মন্তব্য</span>
-                </span>
-              )}
-            </div>
-
+          <div className="flex items-center justify-end pt-4 border-t border-gray-100 mt-auto">
             {onBookmarkToggle && (
               <button
                 onClick={(e) => {
@@ -151,24 +134,7 @@ export default function NewsCard({
             {news.summary}
           </p>
 
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto text-[11px] text-gray-500">
-            <div className="flex items-center gap-2.5">
-              <span className="flex items-center gap-0.5">
-                <Eye className="w-3.5 h-3.5" />
-                <span>{news.reads}</span>
-              </span>
-              <span className="flex items-center gap-0.5">
-                <Heart className="w-3.5 h-3.5 text-red-500 fill-current" />
-                <span>{totalReactions}</span>
-              </span>
-              {news.commentsCount > 0 && (
-                <span className="flex items-center gap-0.5">
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>{news.commentsCount}</span>
-                </span>
-              )}
-            </div>
-
+          <div className="flex items-center justify-end pt-3 border-t border-gray-100 mt-auto text-[11px] text-gray-500">
             {onBookmarkToggle && (
               <button
                 onClick={(e) => {

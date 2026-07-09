@@ -71,7 +71,7 @@ export default function Header({
           <span className="text-gray-300">|</span>
           
           {/* District Selector Dropdown */}
-          <div className="relative">
+          <div className="relative z-50">
             <button
               onClick={() => setDistrictDropdownOpen(!districtDropdownOpen)}
               className="flex items-center gap-1 text-brand-blue hover:text-brand-red font-semibold cursor-pointer"
@@ -84,14 +84,14 @@ export default function Header({
               {districtDropdownOpen && (
                 <>
                   <div
-                    className="fixed inset-0 z-10"
+                    className="fixed inset-0 z-40"
                     onClick={() => setDistrictDropdownOpen(false)}
                   />
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute left-0 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg z-20 max-h-56 overflow-y-auto"
+                    className="absolute left-0 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg z-50 max-h-56 overflow-y-auto"
                   >
                     {MOCK_DISTRICTS.map((district) => (
                       <button

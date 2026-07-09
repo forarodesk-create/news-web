@@ -242,8 +242,6 @@ export default function NewsDetailModal({
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" /> {news.date}
                   </span>
-                  <span>•</span>
-                  <span>{convertToBanglaNumber(news.reads)} বার পঠিত</span>
                 </div>
               </div>
 
@@ -265,104 +263,7 @@ export default function NewsDetailModal({
                 </div>
               )}
 
-              {/* Reactions Panel */}
-              <div className="border-y border-gray-200/50 py-4 space-y-2">
-                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">
-                  আপনার অনুভূতি জানান
-                </h3>
-                <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-                  {[
-                    { type: 'like', emoji: '👍', label: 'লাইক' },
-                    { type: 'love', emoji: '❤️', label: 'ভালোবাসা' },
-                    { type: 'haha', emoji: '😂', label: 'হাাহা' },
-                    { type: 'wow', emoji: '😮', label: 'ওয়াও' },
-                    { type: 'sad', emoji: '😢', label: 'দুঃখিত' },
-                    { type: 'angry', emoji: '😡', label: 'রাগ' }
-                  ].map((reaction) => {
-                    const count = news.reactions[reaction.type as keyof typeof news.reactions] || 0;
-                    const isVoted = hasReacted[reaction.type];
 
-                    return (
-                      <button
-                        key={reaction.type}
-                        onClick={() => handleLocalReaction(reaction.type)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition cursor-pointer select-none ${
-                          isVoted
-                            ? 'bg-red-50 dark:bg-red-950/20 border-red-200 text-brand-red'
-                            : 'bg-transparent border-gray-200 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-600 dark:text-gray-300'
-                        }`}
-                      >
-                        <span className="text-base">{reaction.emoji}</span>
-                        <span>{reaction.label}</span>
-                        <span className="bg-gray-200/70 dark:bg-zinc-800 px-1.5 py-0.2 rounded-full text-[10px]">
-                          {convertToBanglaNumber(count)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Dynamic Comments Engine */}
-              <div className="space-y-4 pt-2">
-                <h3 className="text-lg font-bold flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-brand-blue dark:text-blue-400" />
-                  <span>মন্তব্যসমূহ ({convertToBanglaNumber(articleComments.length)})</span>
-                </h3>
-
-                {/* Comment Box Form */}
-                <form onSubmit={handleCommentSubmit} className="space-y-3 bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-200/50">
-                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">আপনার মন্তব্য লিখুন</h4>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="আপনার নাম (ঐচ্ছিক)"
-                      value={commentAuthor}
-                      onChange={(e) => setCommentAuthor(e.target.value)}
-                      className="px-3 py-2 text-xs bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-md focus:border-brand-blue focus:ring-1 focus:ring-brand-blue outline-none"
-                    />
-                  </div>
-
-                  <div className="flex gap-2">
-                    <textarea
-                      placeholder="এখানে আপনার গঠনমূলক মন্তব্য লিখুন..."
-                      rows={2}
-                      required
-                      value={commentContent}
-                      onChange={(e) => setCommentContent(e.target.value)}
-                      className="flex-1 px-3 py-2 text-xs bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-md focus:border-brand-blue focus:ring-1 focus:ring-brand-blue outline-none resize-none"
-                    />
-                    <button
-                      type="submit"
-                      className="bg-brand-blue hover:bg-blue-800 text-white px-4 rounded-md transition flex items-center justify-center shrink-0 cursor-pointer"
-                    >
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </div>
-                </form>
-
-                {/* Comments List */}
-                <div className="space-y-3 divide-y divide-gray-100 dark:divide-zinc-800">
-                  {articleComments.length === 0 ? (
-                    <div className="text-center py-6 text-xs text-gray-400">
-                      কোনো মন্তব্য পাওয়া যায়নি। প্রথম ব্যক্তি হিসেবে আপনার মতামত শেয়ার করুন!
-                    </div>
-                  ) : (
-                    articleComments.map((comment) => (
-                      <div key={comment.id} className="pt-3 first:pt-0">
-                        <div className="flex justify-between items-center mb-1 text-xs">
-                          <span className="font-bold text-gray-700 dark:text-gray-300">{comment.author}</span>
-                          <span className="text-[10px] text-gray-400">{comment.date}</span>
-                        </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed pl-2 border-l-2 border-gray-200 dark:border-zinc-700">
-                          {comment.content}
-                        </p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
             </div>
           </motion.div>
         </div>

@@ -58,12 +58,35 @@ export default function App() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [isViewingBookmarks, setIsViewingBookmarks] = useState<boolean>(false);
   const [selectedDistrict, setSelectedDistrict] = useState<string>('ঢাকা');
+  const [visibleCount, setVisibleCount] = useState<number>(9);
 
   // Fetch from our new dynamic news hook
-  const { news: apiNews, loading, error, refetch, isUsingFallback } = useNews({
+  const { 
+    news: apiNews, 
+    loading, 
+    error, 
+    refetch, 
+    isUsingFallback,
+    hasMore,
+    loadingMore,
+    loadMore
+  } = useNews({
     category: activeCategory,
     q: searchQuery
   });
+
+  // Reset visibleCount when category or search changes
+  useEffect(() => {
+    setVisibleCount(9);
+  }, [activeCategory, searchQuery]);
+
+  // Load more handler
+  const handleLoadMore = () => {
+    if (!isUsingFallback && hasMore) {
+      loadMore();
+    }
+    setVisibleCount((prev) => prev + 6);
+  };
 
   // Load and initialize data on mount
   useEffect(() => {
@@ -306,6 +329,11 @@ export default function App() {
     return result;
   }, [newsList, activeCategory, searchQuery]);
 
+  // Check if more items can be loaded either from offline cache or via API pagination
+  const hasMoreToLoad = useMemo(() => {
+    return filteredNews.length > visibleCount || (!isUsingFallback && hasMore);
+  }, [filteredNews.length, visibleCount, isUsingFallback, hasMore]);
+
   // Trending / Most read ranking
   const trendingNews = useMemo(() => {
     return [...newsList]
@@ -489,7 +517,7 @@ export default function App() {
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {filteredNews.slice(1).map((news) => (
+                      {filteredNews.slice(1, visibleCount).map((news) => (
                         <NewsCard
                           key={news.id}
                           news={news}
@@ -505,7 +533,7 @@ export default function App() {
               ) : (
                 // Standard category/search listing grid
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredNews.map((news) => (
+                  {filteredNews.slice(0, visibleCount).map((news) => (
                     <NewsCard
                       key={news.id}
                       news={news}
@@ -515,6 +543,29 @@ export default function App() {
                       onBookmarkToggle={() => handleBookmarkToggle(news.id)}
                     />
                   ))}
+                </div>
+              )}
+
+              {/* Load More Button */}
+              {hasMoreToLoad && (
+                <div className="flex justify-center pt-4 pb-2">
+                  <button
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="group flex items-center gap-2 px-6 py-3 border-2 border-brand-blue/20 hover:border-brand-red text-brand-blue hover:text-brand-red font-bold text-sm rounded-xl transition-all duration-200 bg-white hover:bg-slate-50 cursor-pointer shadow-xs disabled:opacity-50"
+                  >
+                    {loadingMore ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-brand-red border-t-transparent rounded-full animate-spin" />
+                        <span>খবর লোড হচ্ছে...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>পূর্ববর্তী ও অন্যান্য খবর দেখুন</span>
+                        <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
 
