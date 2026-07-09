@@ -5,7 +5,6 @@ import Header from './components/Header';
 import NewsCard from './components/NewsCard';
 import Widgets from './components/Widgets';
 import NewsDetailPage from './components/NewsDetailPage';
-import ReporterDesk from './components/ReporterDesk';
 import BookmarksView from './components/BookmarksView';
 import { NewsItem, Comment } from './types';
 import { INITIAL_NEWS_DATA } from './data/newsData';
@@ -57,7 +56,6 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
-  const [reporterDeskOpen, setReporterDeskOpen] = useState<boolean>(false);
   const [isViewingBookmarks, setIsViewingBookmarks] = useState<boolean>(false);
   const [selectedDistrict, setSelectedDistrict] = useState<string>('ঢাকা');
 
@@ -356,7 +354,6 @@ export default function App() {
         setSearchQuery={setSearchQuery}
         breakingNews={breakingNews}
         onSelectNews={handleOpenNewsModal}
-        onOpenReporterDesk={() => setReporterDeskOpen(true)}
         isViewingBookmarks={isViewingBookmarks}
         setIsViewingBookmarks={setIsViewingBookmarks}
         selectedDistrict={selectedDistrict}
@@ -553,7 +550,7 @@ export default function App() {
                   <span>সম্পাদকের সম্পাদকীয়</span>
                 </div>
                 <p className="leading-relaxed font-medium">
-                  ‘বাংলাদেশ খবর’ স্বাধীন ও নিরপেক্ষ সাংবাদিকতার অঙ্গীকার নিয়ে পরিচালিত। দেশের উন্নয়নে সত্যের বাণী সবার কাছে পৌঁছে দেওয়াই আমাদের লক্ষ্য। আমাদের কোনো প্রকাশিত খবরে আপনার গঠনমূলক প্রতিক্রিয়া বা নাগরিক রিপোর্ট থাকলে রিপোর্টার ডেস্কে লিখুন।
+                  ‘বাংলাদেশ খবর’ স্বাধীন ও নিরপেক্ষ সাংবাদিকতার অঙ্গীকার নিয়ে পরিচালিত। দেশের উন্নয়নে সত্যের বাণী সবার কাছে পৌঁছে দেওয়াই আমাদের লক্ষ্য।
                 </p>
               </div>
 
@@ -570,13 +567,6 @@ export default function App() {
       </main>
 
       {/* --- Overlay Modals (Lazy Loaded/Triggered dynamically) --- */}
-
-      {/* Citizen News Editor Desk Modal */}
-      <ReporterDesk
-        isOpen={reporterDeskOpen}
-        onClose={() => setReporterDeskOpen(false)}
-        onPublish={handlePublishNews}
-      />
     </div>
   );
 }

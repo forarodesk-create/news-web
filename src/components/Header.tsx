@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, MapPin, Bookmark, PenSquare, Flame, Calendar, Sparkles } from 'lucide-react';
+import { Search, MapPin, Bookmark, Flame, Calendar, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BANGLA_CATEGORIES, MOCK_DISTRICTS } from '../data/newsData';
 import { NewsItem } from '../types';
@@ -12,7 +12,6 @@ interface HeaderProps {
   setSearchQuery: (query: string) => void;
   breakingNews: NewsItem[];
   onSelectNews: (news: NewsItem) => void;
-  onOpenReporterDesk: () => void;
   isViewingBookmarks: boolean;
   setIsViewingBookmarks: (val: boolean) => void;
   selectedDistrict: string;
@@ -39,7 +38,6 @@ export default function Header({
   setSearchQuery,
   breakingNews,
   onSelectNews,
-  onOpenReporterDesk,
   isViewingBookmarks,
   setIsViewingBookmarks,
   selectedDistrict,
@@ -133,16 +131,6 @@ export default function Header({
           >
             <Bookmark className={`w-3.5 h-3.5 ${isViewingBookmarks ? 'fill-current' : ''}`} />
             <span>বুকমার্কস</span>
-          </button>
-
-          {/* Citizen Reporter Button */}
-          <button
-            id="reporter-desk-btn"
-            onClick={onOpenReporterDesk}
-            className="flex items-center gap-1 px-2.5 py-1 rounded bg-brand-red text-white hover:bg-red-700 font-medium transition cursor-pointer"
-          >
-            <PenSquare className="w-3.5 h-3.5" />
-            <span>নাগরিক রিপোর্টার</span>
           </button>
 
           {/* Search Box */}

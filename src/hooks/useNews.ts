@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { NewsItem } from '../types';
-import { fetchNewsFromApi } from '../services/newsApi';
+import { newsApi } from '../api/newsApi';
 import { INITIAL_NEWS_DATA } from '../data/newsData';
 
 export interface UseNewsOptions {
@@ -17,9 +17,16 @@ export function useNews(options: UseNewsOptions = {}) {
   const [isUsingFallback, setIsUsingFallback] = useState<boolean>(false);
 
   const { category, q } = options;
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchNews = useCallback(async (isLoadMore = false) => {
-    if (isLoadMore && !nextPage) return;
+  const fetchNewsItems = useCallback(async (isLoadMore = false) => {
+    // Abort active request to prevent race conditions & duplicate fetches
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     if (isLoadMore) {
       setLoadingMore(true);
@@ -29,27 +36,34 @@ export function useNews(options: UseNewsOptions = {}) {
     }
 
     try {
-      const pageToken = isLoadMore ? nextPage || undefined : undefined;
-      const result = await fetchNewsFromApi({
+      const pageToFetch = isLoadMore ? (nextPage || undefined) : undefined;
+      const result = await newsApi.fetchNews({
         category,
         q,
-        page: pageToken
+        page: pageToFetch,
+        signal: controller.signal
       });
 
       setNews(prev => {
         if (isLoadMore) {
-          // Merge unique items by id
+          // De-duplicate items by id
           const existingIds = new Set(prev.map(item => item.id));
-          const uniqueNewItems = result.articles.filter(item => !existingIds.has(item.id));
-          return [...prev, ...uniqueNewItems];
+          const newItems = result.articles.filter(item => !existingIds.has(item.id));
+          return [...prev, ...newItems];
         }
         return result.articles;
       });
       setNextPage(result.nextPage);
       setIsUsingFallback(false);
+      setError(null);
     } catch (err: any) {
+      // Ignore abort errors from our own controller cancellation
+      if (err.name === 'AbortError' || err.message === 'Request was cancelled.') {
+        return;
+      }
+
       console.error('Error fetching news from API, falling back to local database:', err);
-      
+
       if (!isLoadMore) {
         // Filter the initial mock news data by category and search query
         const query = (q || '').toLowerCase().trim();
@@ -71,31 +85,38 @@ export function useNews(options: UseNewsOptions = {}) {
         setNews(filteredFallback);
         setNextPage(null);
         setIsUsingFallback(true);
-        // We set error to null because we fell back successfully to local data, keeping the app functional
-        setError(null);
+        setError(null); // fell back successfully to local offline archive, keeping app functional
       } else {
         setError(err.message || 'খবর লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
       }
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      // Only transition loading states if this request was not cancelled
+      if (abortControllerRef.current === controller) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
   }, [category, q, nextPage]);
 
-  // Fetch news when category or search query changes
+  // Initial fetch triggers on option changes
   useEffect(() => {
-    fetchNews(false);
+    fetchNewsItems(false);
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [category, q]);
 
-  const refetch = useCallback(() => {
-    fetchNews(false);
-  }, [fetchNews]);
-
   const loadMore = useCallback(() => {
-    if (nextPage && !loadingMore) {
-      fetchNews(true);
-    }
-  }, [nextPage, loadingMore, fetchNews]);
+    if (loading || loadingMore || !nextPage) return;
+    fetchNewsItems(true);
+  }, [loading, loadingMore, nextPage, fetchNewsItems]);
+
+  const refetch = useCallback(() => {
+    return fetchNewsItems(false);
+  }, [fetchNewsItems]);
 
   return {
     news,
